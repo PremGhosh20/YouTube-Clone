@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const categories = [
@@ -19,9 +18,13 @@ const categories = [
   "Fashion",
 ];
 
-export default function CategoryTabs() {
-  const [activeCategory, setActiveCategory] = useState("All");
-
+export default function CategoryTabs({
+  activeCategory,
+  onCategoryChange,
+}: {
+  activeCategory: string;
+  onCategoryChange: (category: string) => void;
+}) {
   return (
     <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
       {categories.map((category) => (
@@ -29,7 +32,7 @@ export default function CategoryTabs() {
           key={category}
           variant={activeCategory === category ? "default" : "secondary"}
           className="whitespace-nowrap"
-          onClick={() => setActiveCategory(category)}
+          onClick={() => onCategoryChange(category)}
         >
           {category}
         </Button>

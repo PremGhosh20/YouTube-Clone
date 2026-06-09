@@ -80,8 +80,10 @@ const Header = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
-            <Button variant="ghost" size="icon">
-              <VideoIcon className="w-6 h-6" />
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/call" title="Video call with friends">
+                <VideoIcon className="w-6 h-6" />
+              </Link>
             </Button>
             <Button variant="ghost" size="icon">
               <Bell className="w-6 h-6" />

@@ -2,40 +2,62 @@ import mongoose from "mongoose";
 import users from "../Modals/Auth.js";
 
 export const login = async (req, res) => {
-  const { email, name, image } = req.body;
+  const { name, image } = req.body;
+  const email = req.firebaseUser.email;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
 
   try {
-    const existingUser = await users.findOne({ email });
+    let user = await users.findOne({ email });
 
-    if (!existingUser) {
-      const newUser = await users.create({ email, name, image });
-      return res.status(201).json({ result: newUser });
-    } else {
-      return res.status(200).json({ result: existingUser });
+    if (!user) {
+      user = await users.create({
+        email,
+        name: name || req.firebaseUser.name || "User",
+        image: image || "",
+      });
+      return res.status(201).json({ result: user });
     }
+
+    if (name || image) {
+      user.name = name ?? user.name;
+      user.image = image ?? user.image;
+      await user.save();
+    }
+
+    return res.status(200).json({ result: user });
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 export const updateprofile = async (req, res) => {
   const { id: _id } = req.params;
   const { channelname, description } = req.body;
-  if (!mongoose.Types.ObjectId.isValid(_id)) {
-    return res.status(500).json({ message: "User unavailable..." });
+
+  if (String(_id) !== String(req.user._id)) {
+    return res.status(403).json({ message: "Forbidden" });
   }
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+
   try {
     const updatedata = await users.findByIdAndUpdate(
       _id,
-      {
-        $set: {
-          channelname: channelname,
-          description: description,
-        },
-      },
-      { new: true }
+      { $set: { channelname, description } },
+      { new: true, runValidators: true }
     );
-    return res.status(201).json(updatedata);
+
+    if (!updatedata) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(updatedata);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Something went wrong" });

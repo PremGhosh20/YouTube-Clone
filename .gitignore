@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+server/uploads/*
+!server/uploads/.gitkeep
+server/config/firebase-service-account.json
+.env.docker
+docker-compose.override.yml
+.DS_Store
+.next/
+out/
+dist/
+*.log

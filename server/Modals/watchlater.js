@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const watchlaterschema = mongoose.Schema(
   {
     viewer: {
@@ -11,11 +12,11 @@ const watchlaterschema = mongoose.Schema(
       ref: "videofiles",
       required: true,
     },
-    likedon: { type: Date, default: Date.now },
+    savedAt: { type: Date, default: Date.now },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
+
+watchlaterschema.index({ viewer: 1, videoid: 1 }, { unique: true });
 
 export default mongoose.model("watchlater", watchlaterschema);

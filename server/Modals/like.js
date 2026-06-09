@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const likeschema = mongoose.Schema(
   {
     viewer: {
@@ -13,9 +14,9 @@ const likeschema = mongoose.Schema(
     },
     likedon: { type: Date, default: Date.now },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
+
+likeschema.index({ viewer: 1, videoid: 1 }, { unique: true });
 
 export default mongoose.model("like", likeschema);

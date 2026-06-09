@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const historyschema = mongoose.Schema(
   {
     viewer: {
@@ -11,11 +12,12 @@ const historyschema = mongoose.Schema(
       ref: "videofiles",
       required: true,
     },
-    likedon: { type: Date, default: Date.now },
+    watchedAt: { type: Date, default: Date.now },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
+
+historyschema.index({ viewer: 1, videoid: 1 });
+historyschema.index({ viewer: 1, createdAt: -1 });
 
 export default mongoose.model("history", historyschema);

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import { getMediaUrl } from "@/lib/media";
 
 interface RelatedVideosProps {
   videos: Array<{
@@ -9,12 +9,18 @@ interface RelatedVideosProps {
     videochanel: string;
     views: number;
     createdAt: string;
+    filepath?: string;
   }>;
 }
-const vid = "/video/vdo.mp4";
+
 export default function RelatedVideos({ videos }: RelatedVideosProps) {
+  if (!videos?.length) {
+    return <p className="text-sm text-gray-500">No related videos</p>;
+  }
+
   return (
     <div className="space-y-2">
+      <h2 className="font-semibold text-sm mb-2">Related videos</h2>
       {videos.map((video) => (
         <Link
           key={video._id}
@@ -23,8 +29,11 @@ export default function RelatedVideos({ videos }: RelatedVideosProps) {
         >
           <div className="relative w-40 aspect-video bg-gray-100 rounded overflow-hidden flex-shrink-0">
             <video
-              src={vid}
-              className="object-cover group-hover:scale-105 transition-transform duration-200"
+              src={getMediaUrl(video.filepath)}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              preload="none"
+              muted
+              playsInline
             />
           </div>
           <div className="flex-1 min-w-0">
@@ -33,8 +42,9 @@ export default function RelatedVideos({ videos }: RelatedVideosProps) {
             </h3>
             <p className="text-xs text-gray-600 mt-1">{video.videochanel}</p>
             <p className="text-xs text-gray-600">
-              {video.views.toLocaleString()} views •{" "}
-              {formatDistanceToNow(new Date(video.createdAt))} ago
+              {(video.views ?? 0).toLocaleString()} views
+              {video.createdAt &&
+                ` • ${formatDistanceToNow(new Date(video.createdAt))} ago`}
             </p>
           </div>
         </Link>

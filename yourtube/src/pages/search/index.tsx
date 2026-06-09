@@ -4,19 +4,19 @@ import React, { Suspense } from "react";
 
 const index = () => {
   const router = useRouter();
-  const { q } = router.query;
+  const q = typeof router.query.q === "string" ? router.query.q : "";
   return (
     <div className="flex-1 p-4">
       <div className="max-w-6xl">
         {q && (
           <div className="mb-6">
             <h1 className="text-xl font-medium mb-4">
-              Search results for "{q}"
+              Search results for &quot;{q}&quot;
             </h1>
           </div>
         )}
         <Suspense fallback={<div>Loading search results...</div>}>
-          <SearchResult query={q || ""} />
+          <SearchResult query={q} />
         </Suspense>
       </div>
     </div>

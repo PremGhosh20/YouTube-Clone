@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: yourtube-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_URL
+        sync: false
+      - key: CLIENT_ORIGIN  
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+    disk:
+      name: uploads
+      mountPath: /var/data/uploads
+      sizeGB: 10
