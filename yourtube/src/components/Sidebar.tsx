@@ -1,84 +1,30 @@
-import { Home, Clock, ThumbsUp, History, User, Video, Download } from "lucide-react";
-import Link from "next/link";
-import React, { useState } from "react";
-import { Button } from "./ui/button";
-import Channeldialogue from "./channeldialogue";
-import { useUser } from "@/lib/AuthContext";
+import React from "react";
+import SidebarNav from "./SidebarNav";
+import { useSidebar } from "@/lib/SidebarContext";
 
 const Sidebar = () => {
-  const { user } = useUser();
-  const [isdialogeopen, setisdialogeopen] = useState(false);
+  const { isOpen, close } = useSidebar();
 
   return (
-    <aside className="hidden md:block w-64 bg-background border-r border-border min-h-[calc(100vh-57px)] p-2 shrink-0">
-      <nav className="space-y-1">
-        <Link href="/">
-          <Button variant="ghost" className="w-full justify-start">
-            <Home className="w-5 h-5 mr-3" />
-            Home
-          </Button>
-        </Link>
+    <>
+      <aside className="hidden md:block w-64 bg-background border-r border-border min-h-[calc(100vh-57px)] p-2 shrink-0">
+        <SidebarNav />
+      </aside>
 
-        {user && (
-          <div className="border-t pt-2 mt-2">
-            <Link href="/call">
-              <Button variant="ghost" className="w-full justify-start">
-                <Video className="w-5 h-5 mr-3" />
-                Video call
-              </Button>
-            </Link>
-            <Link href="/history">
-              <Button variant="ghost" className="w-full justify-start">
-                <History className="w-5 h-5 mr-3" />
-                History
-              </Button>
-            </Link>
-            <Link href="/liked">
-              <Button variant="ghost" className="w-full justify-start">
-                <ThumbsUp className="w-5 h-5 mr-3" />
-                Liked videos
-              </Button>
-            </Link>
-            <Link href="/watch-later">
-              <Button variant="ghost" className="w-full justify-start">
-                <Clock className="w-5 h-5 mr-3" />
-                Watch later
-              </Button>
-            </Link>
-            <Link href="/downloads">
-              <Button variant="ghost" className="w-full justify-start">
-                <Download className="w-5 h-5 mr-3" />
-                Downloads
-              </Button>
-            </Link>
-            {user?.channelname ? (
-              <Link href={`/channel/${user._id}`}>
-                <Button variant="ghost" className="w-full justify-start">
-                  <User className="w-5 h-5 mr-3" />
-                  Your channel
-                </Button>
-              </Link>
-            ) : (
-              <div className="px-2 py-1.5">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => setisdialogeopen(true)}
-                >
-                  Create Channel
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-      </nav>
-      <Channeldialogue
-        isopen={isdialogeopen}
-        onclose={() => setisdialogeopen(false)}
-        mode="create"
-      />
-    </aside>
+      {isOpen && (
+        <>
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={close}
+          />
+          <aside className="fixed top-[57px] left-0 bottom-0 z-50 w-72 max-w-[85vw] bg-background border-r border-border p-2 overflow-y-auto md:hidden shadow-xl">
+            <SidebarNav onNavigate={close} />
+          </aside>
+        </>
+      )}
+    </>
   );
 };
 

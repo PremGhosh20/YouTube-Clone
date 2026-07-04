@@ -80,21 +80,21 @@ const VideoUploader = ({
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6">
-      <h2 className="text-xl font-semibold mb-4">Upload a video</h2>
+    <div className="bg-muted rounded-lg p-6">
+      <h2 className="text-xl font-semibold mb-4 text-foreground">Upload a video</h2>
       <div className="space-y-4">
         {!videoFile ? (
           <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:bg-gray-100 transition-colors"
+            className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-accent transition-colors"
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
             role="button"
             tabIndex={0}
           >
-            <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-            <p className="text-lg font-medium">Drag and drop video files to upload</p>
-            <p className="text-sm text-gray-500 mt-1">or click to select files</p>
-            <p className="text-xs text-gray-400 mt-4">MP4 only • Up to 100MB</p>
+            <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+            <p className="text-lg font-medium text-foreground">Drag and drop video files to upload</p>
+            <p className="text-sm text-muted-foreground mt-1">or click to select files</p>
+            <p className="text-xs text-muted-foreground mt-4">MP4 only • Up to 100MB</p>
             <input
               type="file"
               ref={fileInputRef}
@@ -105,13 +105,13 @@ const VideoUploader = ({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-              <div className="bg-blue-100 p-2 rounded-md">
+            <div className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
+              <div className="bg-blue-100 dark:bg-blue-950 p-2 rounded-md">
                 <FileVideo className="w-6 h-6 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{videoFile.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium truncate text-foreground">{videoFile.name}</p>
+                <p className="text-sm text-muted-foreground">
                   {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               </div>

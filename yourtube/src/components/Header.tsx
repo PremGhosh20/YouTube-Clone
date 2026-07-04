@@ -19,9 +19,11 @@ import { useUser } from "@/lib/AuthContext";
 import { isPremiumActive } from "@/lib/premium";
 import { getEffectiveWatchTier, watchTierLabel } from "@/lib/watch";
 import { useTheme } from "@/lib/ThemeContext";
+import { useSidebar } from "@/lib/SidebarContext";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
+  const { toggle } = useSidebar();
   // const user: any = {
   //   id: "1",
   //   name: "John Doe",
@@ -48,19 +50,29 @@ const Header = () => {
     }
   };
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-background border-b border-border">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
+    <header className="sticky top-0 z-30 flex items-center gap-2 sm:gap-4 px-2 sm:px-4 py-2 bg-background border-b border-border">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-label="Open menu"
+          onClick={toggle}
+        >
           <Menu className="w-6 h-6" />
         </Button>
-        <Link href="/" className="flex items-center gap-1">
+        <Link href="/" className="flex items-center gap-1 min-w-0">
           <div className="bg-red-600 p-1 rounded">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
               <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
           </div>
-          <span className="text-xl font-medium">YourTube</span>
-          <span className="text-xs text-gray-400 ml-1">IN</span>
+          <span className="text-base sm:text-xl font-medium truncate">
+            YourTube
+          </span>
+          <span className="text-xs text-muted-foreground ml-0.5 sm:ml-1">
+            IN
+          </span>
           {appearance && (
             <span
               className="text-[10px] ml-2 px-1.5 py-0.5 rounded-full border border-border text-muted-foreground hidden lg:inline"
@@ -73,9 +85,9 @@ const Header = () => {
       </div>
       <form
         onSubmit={handleSearch}
-        className="flex items-center gap-2 flex-1 max-w-2xl mx-4"
+        className="hidden md:flex items-center gap-2 flex-1 max-w-2xl mx-2 lg:mx-4 min-w-0"
       >
-        <div className="flex flex-1">
+        <div className="flex flex-1 min-w-0">
           <Input
             type="search"
             placeholder="Search"
@@ -86,16 +98,21 @@ const Header = () => {
           />
           <Button
             type="submit"
-            className="rounded-r-full px-6 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-l-0"
+            className="rounded-r-full px-6 bg-secondary hover:bg-secondary/80 text-muted-foreground border border-l-0"
           >
             <Search className="w-5 h-5" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full shrink-0">
           <Mic className="w-5 h-5" />
         </Button>
       </form>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-0.5 sm:gap-2 ml-auto shrink-0">
+        <Button variant="ghost" size="icon" className="md:hidden" asChild>
+          <Link href="/search" aria-label="Search">
+            <Search className="w-5 h-5" />
+          </Link>
+        </Button>
         {user ? (
           <>
             <Button variant="ghost" size="icon" asChild>
@@ -121,7 +138,7 @@ const Header = () => {
               <Crown className="w-4 h-4" />
               {premiumActive ? "Premium" : "Get Premium"}
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
               <Bell className="w-6 h-6" />
             </Button>
             <DropdownMenu>
@@ -192,11 +209,12 @@ const Header = () => {
               Upgrade plan
             </Button>
             <Button
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 px-2 sm:px-4"
+              size="sm"
               onClick={handlegooglesignin}
             >
               <User className="w-4 h-4" />
-              Sign in
+              <span className="hidden sm:inline">Sign in</span>
             </Button>
           </>
         )}{" "}

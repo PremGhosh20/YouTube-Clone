@@ -39,7 +39,7 @@ const ChannelPage = () => {
   }
 
   return (
-    <div className="flex-1 min-h-screen bg-white">
+    <div className="flex-1 min-h-screen bg-background text-foreground">
       <div className="max-w-full mx-auto">
         <ChannelHeader channel={isOwner ? user : { _id: channelId }} user={user} />
         <Channeltabs />

@@ -193,7 +193,7 @@ const Comments = ({
   return (
     <div id={id} className="space-y-6 scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">{comments.length} Comments</h2>
+        <h2 className="text-xl font-semibold text-foreground">{comments.length} Comments</h2>
         <div className="flex items-center gap-2 text-sm">
           <Languages className="w-4 h-4 text-muted-foreground" />
           <label htmlFor="translate-lang" className="text-muted-foreground">
@@ -262,7 +262,7 @@ const Comments = ({
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="font-medium text-sm">
+                  <span className="font-medium text-sm text-foreground">
                     {comment.usercommented}
                   </span>
                   {comment.userCity && (
@@ -301,7 +301,7 @@ const Comments = ({
                   </div>
                 ) : (
                   <>
-                    <p className="text-sm whitespace-pre-wrap break-words">
+                    <p className="text-sm whitespace-pre-wrap break-words text-foreground">
                       {translations[comment._id] || comment.commentbody}
                     </p>
                     {translations[comment._id] && (

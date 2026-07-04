@@ -152,7 +152,7 @@ const VideoInfo = ({ video }: { video: any }) => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">{video.videotitle}</h1>
+      <h1 className="text-xl font-semibold text-foreground">{video.videotitle}</h1>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -160,32 +160,32 @@ const VideoInfo = ({ video }: { video: any }) => {
             <AvatarFallback>{video.videochanel?.[0] || "?"}</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">{video.videochanel}</h3>
+            <h3 className="font-medium text-foreground">{video.videochanel}</h3>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
-            className={`bg-gray-100 rounded-full ${isLiked ? "text-primary" : ""}`}
+            className={`rounded-full ${isLiked ? "text-primary" : "text-foreground"}`}
             onClick={handleLike}
           >
             <ThumbsUp className={`w-5 h-5 mr-2 ${isLiked ? "fill-current" : ""}`} />
             {likes.toLocaleString()}
           </Button>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
-            className={`bg-gray-100 rounded-full ${isWatchLater ? "text-primary" : ""}`}
+            className={`rounded-full ${isWatchLater ? "text-primary" : "text-foreground"}`}
             onClick={handleWatchLater}
           >
             <Clock className="w-5 h-5 mr-2" />
             {isWatchLater ? "Saved" : "Watch later"}
           </Button>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
-            className="bg-gray-100 rounded-full"
+            className="rounded-full text-foreground"
             onClick={handleDownload}
             disabled={downloading}
           >
@@ -196,7 +196,7 @@ const VideoInfo = ({ video }: { video: any }) => {
             )}
             Download
           </Button>
-          <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full">
+          <Button variant="secondary" size="sm" className="rounded-full text-foreground">
             <Share className="w-5 h-5 mr-2" />
             Share
           </Button>
@@ -204,17 +204,17 @@ const VideoInfo = ({ video }: { video: any }) => {
       </div>
 
       {downloadHint && user && (
-        <p className="text-xs text-gray-500">{downloadHint}</p>
+        <p className="text-xs text-muted-foreground">{downloadHint}</p>
       )}
 
-      <div className="bg-gray-100 rounded-lg p-4">
-        <div className="flex gap-4 text-sm font-medium mb-2">
+      <div className="bg-muted rounded-lg p-4 text-foreground">
+        <div className="flex gap-4 text-sm font-medium mb-2 text-foreground">
           <span>{(video.views ?? 0).toLocaleString()} views</span>
           {video.createdAt && (
             <span>{formatDistanceToNow(new Date(video.createdAt))} ago</span>
           )}
         </div>
-        <div className={`text-sm ${showFullDescription ? "" : "line-clamp-3"}`}>
+        <div className={`text-sm text-foreground ${showFullDescription ? "" : "line-clamp-3"}`}>
           <p>{video.description || "No description provided."}</p>
         </div>
         {video.description && video.description.length > 120 && (
