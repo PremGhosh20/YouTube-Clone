@@ -5,7 +5,8 @@ import Videopplayer from "@/components/Videopplayer";
 import api from "@/lib/api-client";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const WatchPage = () => {
   const router = useRouter();
@@ -13,6 +14,11 @@ const WatchPage = () => {
   const [video, setVideo] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setloading] = useState(true);
+
+  const nextVideoId = useMemo(
+    () => related[0]?._id ?? null,
+    [related]
+  );
 
   useEffect(() => {
     const fetchvideo = async () => {
@@ -36,6 +42,25 @@ const WatchPage = () => {
     fetchvideo();
   }, [id]);
 
+  const handleNextVideo = () => {
+    if (nextVideoId) {
+      router.push(`/watch/${nextVideoId}`);
+    }
+  };
+
+  const handleOpenComments = () => {
+    const el = document.getElementById("watch-comments");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      toast.info("Comments opened");
+    }
+  };
+
+  const handleCloseSite = () => {
+    toast.info("Returning to home");
+    router.push("/");
+  };
+
   if (loading) {
     return <div className="flex-1 p-8 text-center">Loading video...</div>;
   }
@@ -54,9 +79,15 @@ const WatchPage = () => {
         <div className="max-w-7xl mx-auto p-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
-              <Videopplayer video={video} />
+              <Videopplayer
+                video={video}
+                nextVideoId={nextVideoId}
+                onNextVideo={handleNextVideo}
+                onOpenComments={handleOpenComments}
+                onCloseSite={handleCloseSite}
+              />
               <VideoInfo video={video} />
-              <Comments videoId={id as string} />
+              <Comments videoId={id as string} id="watch-comments" />
             </div>
             <div className="space-y-4">
               <RelatedVideos videos={related} />

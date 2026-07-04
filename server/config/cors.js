@@ -8,7 +8,10 @@ function isLocalDevOrigin(origin) {
 
   try {
     const url = new URL(origin);
-    if (url.port !== "3000") return false;
+    const port = url.port || (url.protocol === "https:" ? "443" : "80");
+    const portNum = Number(port);
+    // Next.js may use 3001, 3002, … when 3000 is taken
+    if (portNum < 3000 || portNum > 3010) return false;
 
     const host = url.hostname;
     return (

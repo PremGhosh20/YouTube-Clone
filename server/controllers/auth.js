@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import users from "../Modals/Auth.js";
+import { resolvePremiumStatus } from "../lib/premium.js";
+import { resolveWatchTier } from "../lib/watchPlans.js";
 
 export const login = async (req, res) => {
   const { name, image } = req.body;
@@ -27,7 +29,10 @@ export const login = async (req, res) => {
       await user.save();
     }
 
-    return res.status(200).json({ result: user });
+    await resolvePremiumStatus(user, users);
+    await resolveWatchTier(user, users);
+    const fresh = await users.findById(user._id);
+    return res.status(200).json({ result: fresh });
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ message: "Something went wrong" });

@@ -17,6 +17,38 @@ services:
         sync: false
       - key: UPLOAD_DIR
         value: /var/data/uploads
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_PREMIUM_MONTHLY_AMOUNT
+        value: "9900"
+      - key: RAZORPAY_PREMIUM_QUARTERLY_AMOUNT
+        value: "24900"
+      - key: RAZORPAY_PREMIUM_YEARLY_AMOUNT
+        value: "79900"
+      - key: RAZORPAY_BRONZE_AMOUNT
+        value: "1000"
+      - key: RAZORPAY_SILVER_AMOUNT
+        value: "5000"
+      - key: RAZORPAY_GOLD_AMOUNT
+        value: "10000"
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
     disk:
       name: uploads
       mountPath: /var/data/uploads

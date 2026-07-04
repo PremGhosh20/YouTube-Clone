@@ -1,4 +1,4 @@
-import { Bell, Menu, Mic, Search, User, VideoIcon } from "lucide-react";
+import { Bell, Crown, Menu, Mic, Play, Search, User, VideoIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -12,8 +12,13 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Channeldialogue from "./channeldialogue";
+import PremiumUpgradeDialog from "./PremiumUpgradeDialog";
+import WatchUpgradeDialog from "./WatchUpgradeDialog";
 import { useRouter } from "next/router";
 import { useUser } from "@/lib/AuthContext";
+import { isPremiumActive } from "@/lib/premium";
+import { getEffectiveWatchTier, watchTierLabel } from "@/lib/watch";
+import { useTheme } from "@/lib/ThemeContext";
 
 const Header = () => {
   const { user, logout, handlegooglesignin } = useUser();
@@ -25,7 +30,12 @@ const Header = () => {
   // };
   const [searchQuery, setSearchQuery] = useState("");
   const [isdialogeopen, setisdialogeopen] = useState(false);
+  const [premiumOpen, setPremiumOpen] = useState(false);
+  const [watchUpgradeOpen, setWatchUpgradeOpen] = useState(false);
   const router = useRouter();
+  const premiumActive = isPremiumActive(user);
+  const watchTier = getEffectiveWatchTier(user);
+  const { theme, appearance } = useTheme();
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -38,7 +48,7 @@ const Header = () => {
     }
   };
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white border-b">
+    <header className="flex items-center justify-between px-4 py-2 bg-background border-b border-border">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon">
           <Menu className="w-6 h-6" />
@@ -51,6 +61,14 @@ const Header = () => {
           </div>
           <span className="text-xl font-medium">YourTube</span>
           <span className="text-xs text-gray-400 ml-1">IN</span>
+          {appearance && (
+            <span
+              className="text-[10px] ml-2 px-1.5 py-0.5 rounded-full border border-border text-muted-foreground hidden lg:inline"
+              title={`IST ${appearance.istHour}:00 · ${appearance.region}`}
+            >
+              {theme === "light" ? "Light" : "Dark"} · {appearance.region}
+            </span>
+          )}
         </Link>
       </div>
       <form
@@ -84,6 +102,24 @@ const Header = () => {
               <Link href="/call" title="Video call with friends">
                 <VideoIcon className="w-6 h-6" />
               </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-red-700 hover:text-red-800 hidden md:flex"
+              onClick={() => setWatchUpgradeOpen(true)}
+            >
+              <Play className="w-4 h-4" />
+              {watchTier === "free" ? "Upgrade plan" : watchTierLabel(watchTier)}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-amber-700 hover:text-amber-800 hidden sm:flex"
+              onClick={() => setPremiumOpen(true)}
+            >
+              <Crown className="w-4 h-4" />
+              {premiumActive ? "Premium" : "Get Premium"}
             </Button>
             <Button variant="ghost" size="icon">
               <Bell className="w-6 h-6" />
@@ -126,6 +162,19 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link href="/watch-later">Watch later</Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/downloads">Downloads</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setWatchUpgradeOpen(true)}>
+                  <Play className="w-4 h-4 mr-2 text-red-600" />
+                  {watchTier === "free"
+                    ? "Upgrade watch plan"
+                    : `${watchTierLabel(watchTier)} plan`}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPremiumOpen(true)}>
+                  <Crown className="w-4 h-4 mr-2 text-amber-600" />
+                  {premiumActive ? "Manage Premium" : "Get Premium"}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
               </DropdownMenuContent>
@@ -133,6 +182,15 @@ const Header = () => {
           </>
         ) : (
           <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 text-red-700 hover:text-red-800 hidden sm:flex"
+              onClick={() => setWatchUpgradeOpen(true)}
+            >
+              <Play className="w-4 h-4" />
+              Upgrade plan
+            </Button>
             <Button
               className="flex items-center gap-2"
               onClick={handlegooglesignin}
@@ -147,6 +205,11 @@ const Header = () => {
         isopen={isdialogeopen}
         onclose={() => setisdialogeopen(false)}
         mode="create"
+      />
+      <PremiumUpgradeDialog open={premiumOpen} onOpenChange={setPremiumOpen} />
+      <WatchUpgradeDialog
+        open={watchUpgradeOpen}
+        onOpenChange={setWatchUpgradeOpen}
       />
     </header>
   );

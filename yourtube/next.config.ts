@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Allow opening dev app via Network URL (e.g. http://192.168.x.x:3000)
+  // Allow opening dev app via Network URL (e.g. http://192.168.x.x:3000 from phone)
   allowedDevOrigins: [
     "localhost",
     "127.0.0.1",
+    "192.168.68.58",
     "192.168.152.1",
-    ...(process.env.ALLOWED_DEV_ORIGINS?.split(",").map((h) => h.trim()) ||
+    ...(process.env.ALLOWED_DEV_ORIGINS?.split(",").map((h) => h.trim()).filter(Boolean) ||
       []),
   ],
   env: {

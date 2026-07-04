@@ -7,6 +7,7 @@ export interface AuthContextValue {
   login: (userdata: AppUser) => void;
   logout: () => Promise<void>;
   handlegooglesignin: () => Promise<void>;
+  refreshUser: () => Promise<AppUser | null>;
 }
 
 export function UserProvider(props: { children: ReactNode }): JSX.Element;

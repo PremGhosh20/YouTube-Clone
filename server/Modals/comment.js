@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const commentschema = mongoose.Schema(
   {
     userid: {
@@ -13,6 +14,9 @@ const commentschema = mongoose.Schema(
     },
     commentbody: { type: String },
     usercommented: { type: String },
+    userCity: { type: String, default: "Unknown" },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    dislikedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
     commentedon: { type: Date, default: Date.now },
   },
   {

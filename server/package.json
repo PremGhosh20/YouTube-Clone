@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test:otp": "node scripts/test-otp-delivery.mjs"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,8 @@
     "helmet": "^8.1.0",
     "mongoose": "^8.16.0",
     "multer": "^2.0.1",
+    "nodemailer": "^9.0.1",
+    "razorpay": "^2.9.6",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {

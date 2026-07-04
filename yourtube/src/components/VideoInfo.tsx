@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { Clock, Share, ThumbsUp } from "lucide-react";
+import { Clock, Download, Loader2, Share, ThumbsUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useUser } from "@/lib/AuthContext";
 import api from "@/lib/api-client";
 import { toast } from "sonner";
+import {
+  downloadVideoFile,
+  DownloadLimitError,
+} from "@/lib/download-video";
+import PremiumUpgradeDialog from "@/components/PremiumUpgradeDialog";
+import { formatPremiumStatus } from "@/lib/premium";
 
 const VideoInfo = ({ video }: { video: any }) => {
   const [likes, setlikes] = useState(video.Like || 0);
@@ -13,6 +19,9 @@ const VideoInfo = ({ video }: { video: any }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const { user } = useUser();
   const [isWatchLater, setIsWatchLater] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [premiumOpen, setPremiumOpen] = useState(false);
+  const [downloadHint, setDownloadHint] = useState<string | null>(null);
 
   useEffect(() => {
     setlikes(video.Like || 0);
@@ -46,6 +55,31 @@ const VideoInfo = ({ video }: { video: any }) => {
     loadLikeStatus();
   }, [user, video._id]);
 
+  useEffect(() => {
+    const loadDownloadStatus = async () => {
+      if (!user) return;
+      try {
+        const res = await api.get(`/download/status/${user._id}`);
+        if (res.data.isPremium) {
+          setDownloadHint(
+            formatPremiumStatus(
+              true,
+              res.data.premiumPlan,
+              res.data.premiumExpiresAt
+            )
+          );
+        } else {
+          setDownloadHint(
+            `${res.data.remainingToday ?? 0} free download(s) left today`
+          );
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    loadDownloadStatus();
+  }, [user]);
+
   const handleLike = async () => {
     if (!user) {
       toast.error("Sign in to like videos");
@@ -75,6 +109,44 @@ const VideoInfo = ({ video }: { video: any }) => {
       setIsWatchLater(res.data.watchlater);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!user) {
+      toast.error("Sign in to download videos");
+      return;
+    }
+    setDownloading(true);
+    try {
+      await downloadVideoFile(video._id);
+      toast.success("Download started — check your Downloads folder");
+      const res = await api.get(`/download/status/${user._id}`);
+      if (res.data.isPremium) {
+        setDownloadHint(
+          formatPremiumStatus(
+            true,
+            res.data.premiumPlan,
+            res.data.premiumExpiresAt
+          )
+        );
+      } else {
+        setDownloadHint(
+          `${res.data.remainingToday ?? 0} free download(s) left today`
+        );
+      }
+    } catch (error) {
+      if (error instanceof DownloadLimitError) {
+        toast.error(error.message);
+        setPremiumOpen(true);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+        console.error(error);
+      } else {
+        toast.error("Download failed");
+      }
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -110,12 +182,31 @@ const VideoInfo = ({ video }: { video: any }) => {
             <Clock className="w-5 h-5 mr-2" />
             {isWatchLater ? "Saved" : "Watch later"}
           </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-gray-100 rounded-full"
+            onClick={handleDownload}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-5 h-5 mr-2" />
+            )}
+            Download
+          </Button>
           <Button variant="ghost" size="sm" className="bg-gray-100 rounded-full">
             <Share className="w-5 h-5 mr-2" />
             Share
           </Button>
         </div>
       </div>
+
+      {downloadHint && user && (
+        <p className="text-xs text-gray-500">{downloadHint}</p>
+      )}
+
       <div className="bg-gray-100 rounded-lg p-4">
         <div className="flex gap-4 text-sm font-medium mb-2">
           <span>{(video.views ?? 0).toLocaleString()} views</span>
@@ -137,6 +228,8 @@ const VideoInfo = ({ video }: { video: any }) => {
           </Button>
         )}
       </div>
+
+      <PremiumUpgradeDialog open={premiumOpen} onOpenChange={setPremiumOpen} />
     </div>
   );
 };

@@ -14,6 +14,10 @@ import likeroutes from "./routes/like.js";
 import watchlaterroutes from "./routes/watchlater.js";
 import historyroutes from "./routes/history.js";
 import commentroutes from "./routes/comment.js";
+import downloadroutes from "./routes/download.js";
+import paymentroutes from "./routes/payment.js";
+import watchtimeroutes from "./routes/watchtime.js";
+import contextroutes from "./routes/context.js";
 import { initFirebaseAdmin } from "./config/firebaseAdmin.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { corsOriginValidator, getAllowedOrigins } from "./config/cors.js";
@@ -23,6 +27,7 @@ import {
   startDatabaseRetryLoop,
 } from "./config/database.js";
 import { setupCallSignaling } from "./signaling/callSignaling.js";
+import { getOtpDeliveryStatus } from "./lib/delivery.js";
 
 dotenv.config();
 
@@ -81,12 +86,15 @@ app.get("/health", (req, res) => {
     firebase: firebaseReady ? "ready" : "not_configured",
     signaling: "socket.io",
     allowedOrigins: getAllowedOrigins(),
+    otpDelivery: getOtpDeliveryStatus(),
   });
 });
 
 app.get("/", (req, res) => {
   res.send("YourTube API is running");
 });
+
+app.use("/context", contextroutes);
 
 app.use((req, res, next) => {
   if (!isDatabaseConnected()) {
@@ -104,6 +112,9 @@ app.use("/like", likeroutes);
 app.use("/watch", watchlaterroutes);
 app.use("/history", historyroutes);
 app.use("/comment", commentroutes);
+app.use("/download", downloadroutes);
+app.use("/payment", paymentroutes);
+app.use("/watchtime", watchtimeroutes);
 
 app.use(errorHandler);
 
