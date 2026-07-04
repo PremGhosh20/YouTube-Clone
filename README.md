@@ -38,9 +38,22 @@ npm run dev
 
 ## Deploy
 
-- Frontend: Vercel (root directory `yourtube`)
-- API: Render (root directory `server`, see `render.yaml`)
+- Frontend: Vercel (root directory **`yourtube`**)
+- API: Render (root directory **`server`**)
 - Database: MongoDB Atlas
+
+### Vercel settings (required)
+
+In **Project Settings → Build and Deployment**:
+
+| Setting | Value |
+|---------|--------|
+| Root Directory | `yourtube` |
+| Framework Preset | **Next.js** (not "Other") |
+| Build Command | default or `npm run build` |
+| Output Directory | **leave empty** (override OFF) |
+
+The repo includes `yourtube/vercel.json` so Vercel uses the Next.js builder correctly. Do **not** set Output Directory to `.next` — that causes a platform `404: NOT_FOUND`.
 
 Set `NEXT_PUBLIC_API_URL` on Vercel to your Render API URL. Set `CLIENT_ORIGIN` on Render to your Vercel URL. Add the Vercel domain in Firebase authorized domains.
 
