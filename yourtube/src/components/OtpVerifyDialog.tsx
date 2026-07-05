@@ -13,6 +13,7 @@ import { Loader2, Mail, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "@/lib/api-client";
 import { toast } from "sonner";
+import { showDevOtpToast } from "@/lib/otp-toast";
 
 export type OtpMeta = {
   channel?: "email" | "sms";
@@ -66,7 +67,9 @@ export default function OtpVerifyDialog({
     try {
       const { data } = await api.post("/user/request-otp", { phone: cleaned });
       setLocalMeta(data);
-      if (data.deliveryNote) {
+      if (data.devOtp) {
+        showDevOtpToast(data.devOtp);
+      } else if (data.deliveryNote) {
         toast.warning(data.deliveryNote);
       } else {
         toast.success(data.message || "OTP sent");
@@ -108,7 +111,11 @@ export default function OtpVerifyDialog({
       const body = phone ? { phone: phone.replace(/\D/g, "") } : {};
       const { data } = await api.post("/user/request-otp", body);
       setLocalMeta(data);
-      toast.success(data.message || "OTP resent");
+      if (data.devOtp) {
+        showDevOtpToast(data.devOtp);
+      } else {
+        toast.success(data.message || "OTP resent");
+      }
     } catch (err: unknown) {
       toast.error("Could not resend OTP");
     } finally {

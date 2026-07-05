@@ -4,6 +4,7 @@ import { provider, auth } from "./firebase";
 import api from "./api-client";
 import OtpVerifyDialog from "@/components/OtpVerifyDialog";
 import { toast } from "sonner";
+import { showDevOtpToast } from "./otp-toast";
 
 const UserContext = createContext(null);
 const OTP_SESSION_KEY = "yourtube_otp_verified";
@@ -91,7 +92,9 @@ export const UserProvider = ({ children }) => {
       setOtpMeta(data);
       setOtpFirebaseUser(firebaseUser);
       setOtpOpen(true);
-      if (data.deliveryNote) {
+      if (data.devOtp) {
+        showDevOtpToast(data.devOtp);
+      } else if (data.deliveryNote) {
         toast.warning(data.deliveryNote);
       }
     } catch (error) {

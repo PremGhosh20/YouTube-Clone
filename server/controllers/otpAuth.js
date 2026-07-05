@@ -8,6 +8,7 @@ import {
   maskPhone,
 } from "../lib/otp.js";
 import { getRegionFromRequest } from "../lib/region.js";
+import { shouldExposeDevOtpOnFailure } from "../lib/delivery.js";
 
 export const requestLoginOtp = async (req, res) => {
   const email = req.firebaseUser?.email;
@@ -69,17 +70,6 @@ export const requestLoginOtp = async (req, res) => {
       delivery = await sendSmsOtp({ to: user.phone, code });
     }
 
-    const isProd = process.env.NODE_ENV === "production";
-    if (!delivery.sent && isProd) {
-      return res.status(503).json({
-        message:
-          channel === "email"
-            ? "Could not send email OTP. Check SMTP settings."
-            : "Could not send SMS OTP. Check Twilio settings.",
-        deliveryReason: delivery.reason,
-      });
-    }
-
     user.lastLoginRegion = regionInfo.regionName;
     await user.save();
 
@@ -101,14 +91,17 @@ export const requestLoginOtp = async (req, res) => {
             : "SMS OTP logged to server console (Twilio not configured)",
     };
 
-    if (!delivery.sent && !isProd) {
+    if (!delivery.sent) {
       payload.deliveryNote =
         delivery.reason === "not_configured"
-          ? `${channel === "email" ? "SMTP" : "Twilio"} not configured — check server console or use dev OTP below`
-          : `Delivery failed: ${delivery.reason}`;
-    }
-
-    if (!isProd) {
+          ? `${channel === "email" ? "SMTP" : "Twilio"} not configured — use the OTP in the notification`
+          : `Delivery failed — use the OTP in the notification`;
+      if (shouldExposeDevOtpOnFailure()) {
+        payload.devOtp = code;
+        payload.message =
+          "OTP could not be delivered. Check the notification for your code.";
+      }
+    } else if (process.env.NODE_ENV !== "production") {
       payload.devOtp = code;
     }
 

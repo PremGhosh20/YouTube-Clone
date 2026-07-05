@@ -1,3 +1,9 @@
+/** Include OTP in API response when SMS/email delivery fails (demo / dev fallback). */
+export function shouldExposeDevOtpOnFailure() {
+  if (process.env.NODE_ENV !== "production") return true;
+  return process.env.SHOW_DEV_OTP !== "false";
+}
+
 /** OTP delivery configuration status (no secrets exposed). */
 export function getOtpDeliveryStatus() {
   const emailConfigured = Boolean(
@@ -12,6 +18,7 @@ export function getOtpDeliveryStatus() {
   return {
     email: emailConfigured ? "configured" : "console_fallback",
     sms: smsConfigured ? "configured" : "console_fallback",
-    devOtpInResponse: process.env.NODE_ENV !== "production",
+    devOtpInResponse:
+      process.env.NODE_ENV !== "production" || shouldExposeDevOtpOnFailure(),
   };
 }
